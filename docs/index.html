@@ -448,6 +448,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <ul class="sectlevel1">
 <li><a href="#_security">Security</a></li>
 <li><a href="#_detecting_jailbroken_device">1. Detecting Jailbroken Device</a></li>
+<li><a href="#_hiding_sensitive_data_when_entering_background">2. Hiding Sensitive Data When Entering Background</a></li>
 </ul>
 </div>
 </div>
@@ -621,6 +622,43 @@ There is NO way to know with 100% certainty whether or not a device has been jai
 <p><a href="https://github.com/thii/DTTJailbreakDetection">DTTJailbreakDetection project</a> (Used on iOS)</p>
 </li>
 </ol>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_hiding_sensitive_data_when_entering_background">2. Hiding Sensitive Data When Entering Background</h2>
+<div class="sectionbody">
+<h3 id="_problem_2" class="discrete">Problem</h3>
+<div class="paragraph">
+<p>iOS will take a screenshot of your app when it enters the background that it uses for various previews of the app state.  You want to hide sensitive data in your app&#8217;s UI to prevent this information from leaking out via these screenshots.</p>
+</div>
+<h3 id="_solution_2" class="discrete">Solution</h3>
+<div class="paragraph">
+<p>You can use the <code>ios.blockScreenshotsOnEnterBackground=true</code> build hint to prevent iOS from taking screenshots app goes into the background.  This will cause the canvas on which the Codename One UI is drawn to be hidden in the <code>didEnterBackground</code> hook and unhidden in the <code>willEnterForeground</code> hook.</p>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Warning</div>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>This will cause your app to appear as a blank white rectangle when the user is browsing through opened apps.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/Image-270420-124718.733.png" alt="Image 270420 124718.733" width="200">
+</div>
+<div class="title">Figure 1. Notice the app in the middle is blank white because it has been set to block iOS screenshots.</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<h3 id="_discussion_2" class="discrete">Discussion</h3>
+<div class="paragraph">
+<p>You might have been tempted to try to modify the UI inside the <code>stop()</code> lifecycle method of your app, since it is called itself by the <code>didEnterBackground</code> hook.  This strategy will work in some platforms, but not on iOS because the screenshot call is made immediately upon the <code>didEnterBackground</code> method returning - and the <code>stop()</code> method runs on the EDT (a different thread), so this is not possible.</p>
 </div>
 </div>
 </div>

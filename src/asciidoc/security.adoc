@@ -4,3 +4,5 @@
 The following recipes relate to application security.
 
 include::detect-jailbreak.adoc[]
+
+include::hide-on-stop.adoc[]
