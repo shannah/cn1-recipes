@@ -1,0 +1,11 @@
+= Codename One Recipes
+Steve Hannah
+:doctype: book
+:encoding: utf-8
+:lang: en
+:toc: left
+:numbered:
+
+Recipes for using Codename One to develop cross-platform mobile apps in Java and Kotlin.
+
+include::security.adoc[]
