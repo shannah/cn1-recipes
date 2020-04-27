@@ -1,0 +1,17 @@
+= Codename One Cookbook
+
+This repo is a work in progress.  The goal is to construct an ever-evolving book of recipes for Codename One projects.  It is developed in Asciidoc.
+
+. https://shannah.github.io/cn1-recipes[Read HTML Version]
+
+== Building from Source
+
+**Requirements**
+
+. Asciidoctor
+
+[source,bash]
+----
+./build.sh
+----
+
