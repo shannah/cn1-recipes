@@ -446,9 +446,11 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
+<li><a href="#_data_processing">Data Processing</a></li>
+<li><a href="#_parsing_html">1. Parsing HTML</a></li>
 <li><a href="#_security">Security</a></li>
-<li><a href="#_detecting_jailbroken_device">1. Detecting Jailbroken Device</a></li>
-<li><a href="#_hiding_sensitive_data_when_entering_background">2. Hiding Sensitive Data When Entering Background</a></li>
+<li><a href="#_detecting_jailbroken_device">2. Detecting Jailbroken Device</a></li>
+<li><a href="#_hiding_sensitive_data_when_entering_background">3. Hiding Sensitive Data When Entering Background</a></li>
 </ul>
 </div>
 </div>
@@ -461,6 +463,107 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect1">
+<h2 id="_data_processing">Data Processing</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The following recipes relate to data processing and conversion.  This includes parsing data like JSON, HTML, and XML.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_parsing_html">1. Parsing HTML</h2>
+<div class="sectionbody">
+<h3 id="_problem" class="discrete">Problem</h3>
+<div class="paragraph">
+<p>You want to parse some HTML content into a data structure.  You can&#8217;t simply use the <a href="https://www.codenameone.com/javadoc/com/codename1/xml/XMLParser.html">XMLParser</a> class because the content is not well-formed XML, but you would like to be able to work with the parsed document using the same tools (e.g. <a href="https://www.codenameone.com/javadoc/com/codename1/processing/Result.html">Result</a> and <a href="https://www.codenameone.com/javadoc/com/codename1/xml/Element.html">Element</a>.</p>
+</div>
+<h3 id="_solution" class="discrete">Solution</h3>
+<div class="paragraph">
+<p>Use the HTMLParser class from the <a href="https://github.com/shannah/CN1HTMLParser">CN1HTMLParser cn1lib</a>.  It contains a simple API for parsing an HTML string into an <a href="https://www.codenameone.com/javadoc/com/codename1/xml/Element.html">Element</a>, the same type of element that <a href="https://www.codenameone.com/javadoc/com/codename1/xml/XMLParser.html">XMLParser</a> returns.</p>
+</div>
+<div class="paragraph">
+<p>Usage example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">HTMLParser parser = new HTMLParser();
+
+Element root = parser.parse(htmlString).get(); <b class="conum">(1)</b>
+Result r = Result.fromContent(root);
+
+// Now modify the document
+// In this example we're going to replace image src with placeholders
+// so we can load them separately.
+List&lt;Element&gt; images = r.getAsArray("//img");
+int index = 0;
+List&lt;String&gt; toLoad = new ArrayList&lt;&gt;();
+if (images != null) {
+    for (Element img : images) {
+        String src = img.getAttribute("src");
+        if (src.startsWith("http://*/") || (!src.startsWith("http://") &amp;&amp; !src.startsWith("data:") &amp;&amp; !src.startsWith("https"))) {
+            img.setAttribute("id", "nt-image-"+index);
+            toLoad.add(src);
+            img.setAttribute("src", "");
+            index++;
+        }
+    }
+}
+
+// Now write the document as well-formed XML.
+XMLWriter writer = new XMLWriter(true);
+String pageContent = writer.toXML(root);</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>The <code>parse()</code> method returns an Async promise.  If you want to use it synchronously, you can call <code>get()</code>, which will wait until parsing is done.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p><strong>Alternate Async Usage</strong></p>
+</div>
+<div class="paragraph">
+<p>The above example uses the <code>get()</code> method to wait until the result is ready, but you can use the parser asynchronously as well:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">parser.parse(htmlString).ready(root-&gt;{
+     // root is the root Element of the document.
+});</code></pre>
+</div>
+</div>
+<h3 id="_discussion" class="discrete">Discussion</h3>
+<div class="paragraph">
+<p>The HTMLParser class wraps an off-screen BrowserComponent to use the platform&#8217;s native webview to actually parse the HTML.  It then serializes the DOM as XML, which is then re-parsed using the Codename One XML parser.  There are pitfalls to this approach, including performance (it takes time to pass data back-and forth between a webview, after all), and possibly different results on different platforms.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+The Codename One core library also includes an HTMLParser class at <code>com.codename1.ui.html.HTMLParser</code>.  This parser is meant to be used as part of the deprecated HTMLComponent class, which is a light-weight web view component that used to be used on platforms that didn&#8217;t have a native webview, e.g. J2ME.  Now all modern platforms have a native webview, so this component isn&#8217;t used much.  Additionally the HTMLParser class in that package doesn&#8217;t support all HTML, and will fail in strange ways if you try to use it headlessly.
+</td>
+</tr>
+</table>
+</div>
+<h3 id="_further_reading" class="discrete">Further Reading</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><a href="https://www.codenameone.com/javadoc/com/codename1/xml/XMLParser.html">XMLParser Javadocs</a> - Since the output of HTMLParser is the same as XMLParser, you can find some useful examples in the XMLParser javadocs.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="_security">Security</h2>
 <div class="sectionbody">
 <div class="paragraph">
@@ -469,13 +572,13 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect1">
-<h2 id="_detecting_jailbroken_device">1. Detecting Jailbroken Device</h2>
+<h2 id="_detecting_jailbroken_device">2. Detecting Jailbroken Device</h2>
 <div class="sectionbody">
-<h3 id="_problem" class="discrete">Problem</h3>
+<h3 id="_problem_2" class="discrete">Problem</h3>
 <div class="paragraph">
 <p>You want to detect whether the device your app is running on is Jailbroken or rooted.</p>
 </div>
-<h3 id="_solution" class="discrete">Solution</h3>
+<h3 id="_solution_2" class="discrete">Solution</h3>
 <div class="paragraph">
 <p>While there is no way to know whether the device is rooted with 100% certainty, you can use the <a href="https://github.com/shannah/CN1JailbreakDetect">CN1JailbreakDetect</a> cn1lib to to make a good guess.  This cn1lib acts as a thin wrapper around the <a href="https://github.com/scottyab/rootbeer">RootBeer</a> Android library, and <a href="https://github.com/thii/DTTJailbreakDetection">DTTJailbreakDetection</a> iOS library, which employ heuristics to determine whether the device has likely been jailbroken.</p>
 </div>
@@ -580,7 +683,7 @@ This sample is part of the <a href="https://github.com/codenameone/CodenameOne/t
 </tr>
 </table>
 </div>
-<h3 id="_discussion" class="discrete">Discussion</h3>
+<h3 id="_discussion_2" class="discrete">Discussion</h3>
 <div class="paragraph">
 <p>The <a href="https://github.com/shannah/CN1JailbreakDetect">CN1JailbreakDetect</a> provides two useful static methods for jailbreak detection:</p>
 </div>
@@ -609,7 +712,7 @@ There is NO way to know with 100% certainty whether or not a device has been jai
 </tr>
 </table>
 </div>
-<h3 id="_further_reading" class="discrete">Further Reading</h3>
+<h3 id="_further_reading_2" class="discrete">Further Reading</h3>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
@@ -626,13 +729,13 @@ There is NO way to know with 100% certainty whether or not a device has been jai
 </div>
 </div>
 <div class="sect1">
-<h2 id="_hiding_sensitive_data_when_entering_background">2. Hiding Sensitive Data When Entering Background</h2>
+<h2 id="_hiding_sensitive_data_when_entering_background">3. Hiding Sensitive Data When Entering Background</h2>
 <div class="sectionbody">
-<h3 id="_problem_2" class="discrete">Problem</h3>
+<h3 id="_problem_3" class="discrete">Problem</h3>
 <div class="paragraph">
 <p>iOS will take a screenshot of your app when it enters the background that it uses for various previews of the app state.  You want to hide sensitive data in your app&#8217;s UI to prevent this information from leaking out via these screenshots.</p>
 </div>
-<h3 id="_solution_2" class="discrete">Solution</h3>
+<h3 id="_solution_3" class="discrete">Solution</h3>
 <div class="paragraph">
 <p>You can use the <code>ios.blockScreenshotsOnEnterBackground=true</code> build hint to prevent iOS from taking screenshots app goes into the background.  This will cause the canvas on which the Codename One UI is drawn to be hidden in the <code>didEnterBackground</code> hook and unhidden in the <code>willEnterForeground</code> hook.</p>
 </div>
@@ -656,7 +759,7 @@ There is NO way to know with 100% certainty whether or not a device has been jai
 </tr>
 </table>
 </div>
-<h3 id="_discussion_2" class="discrete">Discussion</h3>
+<h3 id="_discussion_3" class="discrete">Discussion</h3>
 <div class="paragraph">
 <p>You might have been tempted to try to modify the UI inside the <code>stop()</code> lifecycle method of your app, since it is called itself by the <code>didEnterBackground</code> hook.  This strategy will work in some platforms, but not on iOS because the screenshot call is made immediately upon the <code>didEnterBackground</code> method returning - and the <code>stop()</code> method runs on the EDT (a different thread), so this is not possible.</p>
 </div>
@@ -665,7 +768,7 @@ There is NO way to know with 100% certainty whether or not a device has been jai
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2020-04-27 06:47:03 -0700
+Last updated 2020-05-06 06:41:27 -0700
 </div>
 </div>
 </body>
