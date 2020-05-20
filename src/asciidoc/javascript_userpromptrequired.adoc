@@ -1,0 +1,26 @@
+== Playing Audio in a Headless App
+
+[discrete]
+=== Problem
+
+In some cases Codename One apps may be deployed as "headless" apps.  This can be achieved by simply embedding the app inside an iframe and positioning the iframe outside the main view port (e.g. x=-1000, y=-1000).  If you are deploying the app this way, you may run into cases where the app requires user interaction.  For example, if you try to play audio in the app, and you are running on iOS, then the app may require some user interaction in order for Safari to allow the audio.  Codename One apps deal with this situation by prompting the user to play the audio.  However, if the app is off screen, the user won't see this prompt, so the audio will *just not play*.
+
+NOTE: The user will only be prompted for the *first* audio clip that the app tries to play.  Subsequent clips can be played unimpeded.
+
+[discrete]
+=== Solution
+
+Codename One broadcasts a custom DOM event named "cn1userprompt" when a prompt is displayed that the user needs to interact with.  You can register an event listener in the outside webpage to listen for this event, and display the iframe in such cases.
+
+The "cn1userpromptresponse" custom DOM event will be dispatched after the user has finished the interaction.
+
+[source,javascript]
+----
+myIframe.contentWindow.addEventListener('cn1userprompt', function(evt) {
+    // The app requires user interaction..  display the iframe
+});
+
+myIframe.contentWindow.addEventListener('cn1userpromptresponse', function(evt) {
+    // The user has finished their interaction... you can hide the iframe
+});
+----

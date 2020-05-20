@@ -451,6 +451,11 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_security">Security</a></li>
 <li><a href="#_detecting_jailbroken_device">2. Detecting Jailbroken Device</a></li>
 <li><a href="#_hiding_sensitive_data_when_entering_background">3. Hiding Sensitive Data When Entering Background</a></li>
+<li><a href="#_javascript">Javascript</a></li>
+<li><a href="#_sending_messages_to_outside_webpage">4. Sending Messages to Outside Webpage</a></li>
+<li><a href="#_receiving_messages_from_the_outside_webpage">5. Receiving Messages from the Outside Webpage</a></li>
+<li><a href="#_notify_webpage_when_app_is_started">6. Notify Webpage When App is Started</a></li>
+<li><a href="#_playing_audio_in_a_headless_app">7. Playing Audio in a Headless App</a></li>
 </ul>
 </div>
 </div>
@@ -765,10 +770,205 @@ There is NO way to know with 100% certainty whether or not a device has been jai
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_javascript">Javascript</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The following sections contain tips for working with the Javascript port.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_sending_messages_to_outside_webpage">4. Sending Messages to Outside Webpage</h2>
+<div class="sectionbody">
+<h3 id="_problem_4" class="discrete">Problem</h3>
+<div class="paragraph">
+<p>You want to send a message from your Codename One app to the webpage that contains it.</p>
+</div>
+<h3 id="_solution_4" class="discrete">Solution</h3>
+<div class="paragraph">
+<p>You can use <code>CN.postMessage()</code>, in Codename One to send the message.  The message will be dispatched to Javascript event listeners in the outside webpage that register to receive <code>cn1outbox</code> events.</p>
+</div>
+<div class="listingblock">
+<div class="title">Sending a message from Codename One to the outside webpage.</div>
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">// The Java side
+MessageEvent message = new MessageEvent(
+    null,        // event source... we'll leave it null
+    "Hello",     // The message to deliver
+    0            // Optional message code.
+);
+//Dispatch the message
+CN.postMessage(message);</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Receiving messages from Codename One in outside webpage.</div>
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">// The javascript side
+window.addEventListener('cn1outbox', function(evt) {
+    var message = evt.detail;
+    var code = evt.code;
+    ...
+});</code></pre>
+</div>
+</div>
+<h3 id="_discussion_4" class="discrete">Discussion</h3>
+<div class="paragraph">
+<p>The <code>CN.postMessage()</code> method allows you to send a message to the native platform.  When deploying as a Javascript app, these messages are converted to custom DOM events and dispatched on the <code>window</code> object.  The event name is "cn1outbox", so you can receive events like this from the "javascript" side by registering an event listener for these types of events on the <code>window</code> object.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_receiving_messages_from_the_outside_webpage">5. Receiving Messages from the Outside Webpage</h2>
+<div class="sectionbody">
+<h3 id="_problem_5" class="discrete">Problem</h3>
+<div class="paragraph">
+<p>You want to send messages from Javascript (i.e. the page containing the app) to the Codename One app.</p>
+</div>
+<h3 id="_solution_5" class="discrete">Solution</h3>
+<div class="paragraph">
+<p>From Javascript, you can dispatch a custom event named 'cn1inbox' on the <code>window</code> object.  You can receive these events in Codename One using the <code>CN.addMessageListener()</code> method.</p>
+</div>
+<div class="listingblock">
+<div class="title">Sending Message from Javascript that can be received inside Codename One app.</div>
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">// The javascript side
+var message = new CustomEvent('cn1inbox', {detail: 'Hello', code: 0});
+window.dispatchEvent(message);</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Receiving Event in Codename One</div>
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">// The Java side
+CN.addMessageListener(evt-&gt;{
+    String message = evt.getMessage();
+    int code = evt.getCode();
+    ...
+});</code></pre>
+</div>
+</div>
+<h3 id="_discussion_5" class="discrete">Discussion</h3>
+<div class="paragraph">
+<p>The <code>CN.addMessageListener()</code> and <code>CN.removeMessageListener()</code> methods allow you to register listeners to receive messages from the native platform.  When the app is deployed as a Javascript app, the webpage can target these listeners using a custom DOM event named 'cn1inbox'.  The Codename One app will receive all events of this type, and dispatch them to the listeners that were registered using <code>CN.addMessageListener()</code>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_notify_webpage_when_app_is_started">6. Notify Webpage When App is Started</h2>
+<div class="sectionbody">
+<h3 id="_problem_6" class="discrete">Problem</h3>
+<div class="paragraph">
+<p>You want to notify the outside page when the app is finished loading.  If the webpage needs to communicate with the app, it is very helpful to know when the app is ready.</p>
+</div>
+<h3 id="_solution_6" class="discrete">Solution</h3>
+<div class="paragraph">
+<p>Register a DOM event listener on the <code>window</code> object for the <code>aftercn1start</code> event.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">window.addEventListener('aftercn1start', function(evt) {
+   console.log("The Codename One app has started...");
+   ...
+});</code></pre>
+</div>
+</div>
+<h4 id="_discussion_6" class="discrete">Discussion</h4>
+<div class="paragraph">
+<p>Codename One broadcasts its lifecycle events as DOM events so that the webpage can stay synchronized with its status.  The following events are currently supported:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 1. Supported DOM events</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Event</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>beforecn1init</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Fired before the <code>init()</code> method is run.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>aftercn1init</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Fired after the <code>init()</code> method is run.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>beforecn1start</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Fired before the <code>start()</code> method is run.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>aftercn1start</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Fired after the <code>start()</code> method is run.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+Currently The <code>stop()</code> and <code>destroy()</code> lifecycle methods are not used in the Javascript port, as there doesn&#8217;t seem to be a logical place to fire them.  This may change in the future.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>In addition to these DOM events, you can also check <code>window.cn1Initialized</code> and <code>window.cn1Started</code> for <code>true</code> to see if the <code>init()</code> and <code>start()</code> methods have already run.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_playing_audio_in_a_headless_app">7. Playing Audio in a Headless App</h2>
+<div class="sectionbody">
+<h3 id="_problem_7" class="discrete">Problem</h3>
+<div class="paragraph">
+<p>In some cases Codename One apps may be deployed as "headless" apps.  This can be achieved by simply embedding the app inside an iframe and positioning the iframe outside the main view port (e.g. x=-1000, y=-1000).  If you are deploying the app this way, you may run into cases where the app requires user interaction.  For example, if you try to play audio in the app, and you are running on iOS, then the app may require some user interaction in order for Safari to allow the audio.  Codename One apps deal with this situation by prompting the user to play the audio.  However, if the app is off screen, the user won&#8217;t see this prompt, so the audio will <strong>just not play</strong>.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+The user will only be prompted for the <strong>first</strong> audio clip that the app tries to play.  Subsequent clips can be played unimpeded.
+</td>
+</tr>
+</table>
+</div>
+<h3 id="_solution_7" class="discrete">Solution</h3>
+<div class="paragraph">
+<p>Codename One broadcasts a custom DOM event named "cn1userprompt" when a prompt is displayed that the user needs to interact with.  You can register an event listener in the outside webpage to listen for this event, and display the iframe in such cases.</p>
+</div>
+<div class="paragraph">
+<p>The "cn1userpromptresponse" custom DOM event will be dispatched after the user has finished the interaction.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-javascript" data-lang="javascript">myIframe.contentWindow.addEventListener('cn1userprompt', function(evt) {
+    // The app requires user interaction..  display the iframe
+});
+
+myIframe.contentWindow.addEventListener('cn1userpromptresponse', function(evt) {
+    // The user has finished their interaction... you can hide the iframe
+});</code></pre>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2020-05-06 06:41:27 -0700
+Last updated 2020-05-20 14:25:15 -0700
 </div>
 </div>
 </body>

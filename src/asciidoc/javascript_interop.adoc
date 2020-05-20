@@ -1,0 +1,40 @@
+== Sending Messages to Outside Webpage
+
+[discrete]
+=== Problem
+
+You need to communicate back and forth between the Codename One app and the webpage that contains it.
+
+[discrete]
+=== Solution
+
+There are two sides to this problem:
+
+. Sending messages from Codename One to the outside webpage.
+. Sending messages form the Outside webpage to Codename One.
+
+For the first case (sending messages to the outside webpage), you can use `CN.postMessage()`, in Codename One to send the message.  The message will be dispatched to Javascript event listeners in the outside webpage that register to receive 'cn1outbox' events.
+
+.Sending a message from Codename One to the outside webpage.
+[source,java]
+----
+MessageEvent message = new MessageEvent(
+    null,        // event source... we'll leave it null
+    "Hello",     // The message to deliver
+    0            // Optional message code.  
+);
+//Dispatch the message
+CN.postMessage(message);
+----
+
+.Receiving messages from Codename One in outside webpage.
+[source,javascript]
+----
+window.addEventListener('cn1outbox', function(evt) {
+    var message = evt.detail;
+    var code = evt.code;
+    ...
+});
+----
+
+

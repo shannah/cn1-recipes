@@ -1,0 +1,39 @@
+== Notify Webpage When App is Started
+
+[discrete]
+=== Problem
+
+You want to notify the outside page when the app is finished loading.  If the webpage needs to communicate with the app, it is very helpful to know when the app is ready.
+
+[discrete]
+=== Solution
+
+Register a DOM event listener on the `window` object for the `aftercn1start` event.
+
+[source,javascript]
+----
+window.addEventListener('aftercn1start', function(evt) {
+   console.log("The Codename One app has started...");
+   ...
+});
+----
+
+[discrete]
+==== Discussion
+
+Codename One broadcasts its lifecycle events as DOM events so that the webpage can stay synchronized with its status.  The following events are currently supported:
+
+
+.Supported DOM events
+[width="100%",options="header"]
+|====================
+|Event  |Description
+|`beforecn1init`  |  Fired before the `init()` method is run.
+|`aftercn1init`  |  Fired after the `init()` method is run.
+|`beforecn1start`  |  Fired before the `start()` method is run.
+|`aftercn1start`  |  Fired after the `start()` method is run. 
+|====================
+
+NOTE: Currently The `stop()` and `destroy()` lifecycle methods are not used in the Javascript port, as there doesn't seem to be a logical place to fire them.  This may change in the future.
+
+In addition to these DOM events, you can also check `window.cn1Initialized` and `window.cn1Started` for `true` to see if the `init()` and `start()` methods have already run.

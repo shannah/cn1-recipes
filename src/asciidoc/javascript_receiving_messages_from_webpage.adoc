@@ -1,0 +1,36 @@
+== Receiving Messages from the Outside Webpage
+
+[discrete]
+=== Problem
+
+You want to send messages from Javascript (i.e. the page containing the app) to the Codename One app.
+
+[discrete]
+=== Solution
+
+From Javascript, you can dispatch a custom event named 'cn1inbox' on the `window` object.  You can receive these events in Codename One using the `CN.addMessageListener()` method.
+
+
+.Sending Message from Javascript that can be received inside Codename One app.
+[source,javascript]
+----
+// The javascript side
+var message = new CustomEvent('cn1inbox', {detail: 'Hello', code: 0});
+window.dispatchEvent(message);
+----
+
+.Receiving Event in Codename One
+[source,java]
+----
+// The Java side
+CN.addMessageListener(evt->{
+    String message = evt.getMessage();
+    int code = evt.getCode();
+    ...
+});
+----
+
+[discrete]
+=== Discussion
+
+The `CN.addMessageListener()` and `CN.removeMessageListener()` methods allow you to register listeners to receive messages from the native platform.  When the app is deployed as a Javascript app, the webpage can target these listeners using a custom DOM event named 'cn1inbox'.  The Codename One app will receive all events of this type, and dispatch them to the listeners that were registered using `CN.addMessageListener()`.

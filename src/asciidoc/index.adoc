@@ -11,3 +11,5 @@ Recipes for using Codename One to develop cross-platform mobile apps in Java and
 include::data-processing.adoc[]
 
 include::security.adoc[]
+
+include::javascript.adoc[]
