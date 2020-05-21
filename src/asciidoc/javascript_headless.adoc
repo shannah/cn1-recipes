@@ -1,0 +1,34 @@
+== Deploying as a "Headless" Javascript App
+
+[discrete]
+=== Problem
+
+You want to deploy your app inside a webpage "headlessly".  I.e. You don't want the user to see the app.  This might be useful if you just want to use your app as a javascript library.
+
+[discrete]
+=== Solution
+
+Embed the app inside an iFrame, and position the iframe outside the viewport.  E.g.
+
+[source,html]
+----
+<!doctype html>
+<html>
+  <head> ... </head>
+  <body>
+    <iframe 
+      id='myapp' 
+      style='position:fixed; top:-500px; left:0; width: 640px; height: 480px'
+      src='https://example.com/MyApp/index.html'
+    />
+    .. Rest of webpage..
+  </body>
+</html>
+----
+
+NOTE: You can't set `display:none` or set the width or height to 0 on the iframe.  Browsers will get smart and not load it fully then.  The iframe needs to have non-zero area, and be visible - but it can be rendered offscreen, which is what we do here.
+
+[discrete]
+=== Discussion
+
+If you are deploying your app as a headless app, then you are likely expecting to be able to communicate between the webpage and your app.  You will also need to be notified of lifecycle events in your app so you know when it has finished loading.  Be aware of CORS (cross-origin-resource-sharing) browser policies if the page containing the `<iframe>` is loaded from a different domain than your app.

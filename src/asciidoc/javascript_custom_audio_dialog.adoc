@@ -1,0 +1,59 @@
+== Displaying Custom Prompt to Play Audio
+
+[discrete]
+=== Background
+
+On some browsers (e.g. Safari), your app can only play audio as a direct response to user interaction.  E.g. The user needs to actually click on the screen to initiate audio play.  This is only required for the first audio clip that your app plays. If the app is ever denied permission to play an audio clip by the browser, it will display a prompt to the user saying "Audio Ready", with a "Play Now" button.  When the user presses that button, the audio will begin to play.
+
+[discrete]
+=== Problem
+
+You want to customize the dialog prompt that is displayed to ask the user for permission to play audio.
+
+[discrete]
+=== Solution
+
+Register a message listener using `CN.addMessageListener()`, and call `isPromptForAudioPlayer()` on the received `MessageEvent` object to see if it is a prompt to play audio.
+
+E.g.
+
+[source,java]
+----
+CN.addMessageListener(evt->{
+    if (evt.isPromptForAudioPlayer()) { <1>
+        System.out.println("Received a prompt for the audio player... audio is ready");
+        // This is a prompt that is shown when there is audio ready to play
+        // but the user needs to interact.  This is javascript-only to get around
+        // restrictions that only allow audio in direct response to user interaction
+        
+        // We should display some kind of UI to let the user know that the audio is ready
+        // and they need to press a button to play it.
+        evt.consume(); <2>
+        CN.callSerially(()-> { <3>
+            MessageEvent.PromptPromise res = evt.getPromptPromise(); <4>
+            if (Dialog.show("Audio Ready", "The audio is ready.", "Play", "Cancel")) {
+                res.complete(true); <5>
+            } else {
+                res.complete(false); <6>
+            }
+            return;
+        });
+        return;
+        
+    }
+});
+----
+<1> `isPromptForAudioPlayer()` tells us that this event is a prompt to play audio.
+<2> **Important** You must call `evt.consume()` to let Codename One that you are going to handle this prompt.  Otherwise, the default permission prompt will still be shown.
+<3> Because we are using a modal dialog which will block the event dispatch, we wrap the dialog in `callSerially()` so this event dispatch won't be blocked.  This is not absolutely necessary, but it will make it easier to follow the app's logic, as these prompts are designed to by asynchronous.
+<4> Obtain the `PromptPromise` from the event which we will use to convey the user's response back to the app.  *YOU MUST call the `complete()` on this promise no matter what, or the app will lock up.*
+<5> If the user elected to "Play" the audio, then call `res.complete(true)` on the promise.
+<6> If the user elected not to play the audio, then call `res.complete(false)` on the promise.
+
+TIP: You can also use the `isPromptForAudioRecorder()` method to detect a request for the audio recorder prompt.
+
+[discrete]
+=== Further Reading
+
+. https://developers.google.com/web/updates/2017/09/autoplay-policy-changes[Chrome Autoplay Policy (2017-09)]
+

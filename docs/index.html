@@ -455,7 +455,9 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_sending_messages_to_outside_webpage">4. Sending Messages to Outside Webpage</a></li>
 <li><a href="#_receiving_messages_from_the_outside_webpage">5. Receiving Messages from the Outside Webpage</a></li>
 <li><a href="#_notify_webpage_when_app_is_started">6. Notify Webpage When App is Started</a></li>
-<li><a href="#_playing_audio_in_a_headless_app">7. Playing Audio in a Headless App</a></li>
+<li><a href="#_deploying_as_a_headless_javascript_app">7. Deploying as a "Headless" Javascript App</a></li>
+<li><a href="#_playing_audio_in_a_headless_app">8. Playing Audio in a Headless App</a></li>
+<li><a href="#_displaying_custom_prompt_to_play_audio">9. Displaying Custom Prompt to Play Audio</a></li>
 </ul>
 </div>
 </div>
@@ -927,9 +929,54 @@ Currently The <code>stop()</code> and <code>destroy()</code> lifecycle methods a
 </div>
 </div>
 <div class="sect1">
-<h2 id="_playing_audio_in_a_headless_app">7. Playing Audio in a Headless App</h2>
+<h2 id="_deploying_as_a_headless_javascript_app">7. Deploying as a "Headless" Javascript App</h2>
 <div class="sectionbody">
 <h3 id="_problem_7" class="discrete">Problem</h3>
+<div class="paragraph">
+<p>You want to deploy your app inside a webpage "headlessly".  I.e. You don&#8217;t want the user to see the app.  This might be useful if you just want to use your app as a javascript library.</p>
+</div>
+<h3 id="_solution_7" class="discrete">Solution</h3>
+<div class="paragraph">
+<p>Embed the app inside an iFrame, and position the iframe outside the viewport.  E.g.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-html" data-lang="html">&lt;!doctype html&gt;
+&lt;html&gt;
+  &lt;head&gt; ... &lt;/head&gt;
+  &lt;body&gt;
+    &lt;iframe
+      id='myapp'
+      style='position:fixed; top:-500px; left:0; width: 640px; height: 480px'
+      src='https://example.com/MyApp/index.html'
+    /&gt;
+    .. Rest of webpage..
+  &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+You can&#8217;t set <code>display:none</code> or set the width or height to 0 on the iframe.  Browsers will get smart and not load it fully then.  The iframe needs to have non-zero area, and be visible - but it can be rendered offscreen, which is what we do here.
+</td>
+</tr>
+</table>
+</div>
+<h3 id="_discussion_7" class="discrete">Discussion</h3>
+<div class="paragraph">
+<p>If you are deploying your app as a headless app, then you are likely expecting to be able to communicate between the webpage and your app.  You will also need to be notified of lifecycle events in your app so you know when it has finished loading.  Be aware of CORS (cross-origin-resource-sharing) browser policies if the page containing the <code>&lt;iframe&gt;</code> is loaded from a different domain than your app.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_playing_audio_in_a_headless_app">8. Playing Audio in a Headless App</h2>
+<div class="sectionbody">
+<h3 id="_problem_8" class="discrete">Problem</h3>
 <div class="paragraph">
 <p>In some cases Codename One apps may be deployed as "headless" apps.  This can be achieved by simply embedding the app inside an iframe and positioning the iframe outside the main view port (e.g. x=-1000, y=-1000).  If you are deploying the app this way, you may run into cases where the app requires user interaction.  For example, if you try to play audio in the app, and you are running on iOS, then the app may require some user interaction in order for Safari to allow the audio.  Codename One apps deal with this situation by prompting the user to play the audio.  However, if the app is off screen, the user won&#8217;t see this prompt, so the audio will <strong>just not play</strong>.</p>
 </div>
@@ -945,7 +992,7 @@ The user will only be prompted for the <strong>first</strong> audio clip that th
 </tr>
 </table>
 </div>
-<h3 id="_solution_7" class="discrete">Solution</h3>
+<h3 id="_solution_8" class="discrete">Solution</h3>
 <div class="paragraph">
 <p>Codename One broadcasts a custom DOM event named "cn1userprompt" when a prompt is displayed that the user needs to interact with.  You can register an event listener in the outside webpage to listen for this event, and display the iframe in such cases.</p>
 </div>
@@ -962,6 +1009,95 @@ myIframe.contentWindow.addEventListener('cn1userpromptresponse', function(evt) {
     // The user has finished their interaction... you can hide the iframe
 });</code></pre>
 </div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_displaying_custom_prompt_to_play_audio">9. Displaying Custom Prompt to Play Audio</h2>
+<div class="sectionbody">
+<h3 id="_background" class="discrete">Background</h3>
+<div class="paragraph">
+<p>On some browsers (e.g. Safari), your app can only play audio as a direct response to user interaction.  E.g. The user needs to actually click on the screen to initiate audio play.  This is only required for the first audio clip that your app plays. If the app is ever denied permission to play an audio clip by the browser, it will display a prompt to the user saying "Audio Ready", with a "Play Now" button.  When the user presses that button, the audio will begin to play.</p>
+</div>
+<h3 id="_problem_9" class="discrete">Problem</h3>
+<div class="paragraph">
+<p>You want to customize the dialog prompt that is displayed to ask the user for permission to play audio.</p>
+</div>
+<h3 id="_solution_9" class="discrete">Solution</h3>
+<div class="paragraph">
+<p>Register a message listener using <code>CN.addMessageListener()</code>, and call <code>isPromptForAudioPlayer()</code> on the received <code>MessageEvent</code> object to see if it is a prompt to play audio.</p>
+</div>
+<div class="paragraph">
+<p>E.g.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-java" data-lang="java">CN.addMessageListener(evt-&gt;{
+    if (evt.isPromptForAudioPlayer()) { <b class="conum">(1)</b>
+        System.out.println("Received a prompt for the audio player... audio is ready");
+        // This is a prompt that is shown when there is audio ready to play
+        // but the user needs to interact.  This is javascript-only to get around
+        // restrictions that only allow audio in direct response to user interaction
+
+        // We should display some kind of UI to let the user know that the audio is ready
+        // and they need to press a button to play it.
+        evt.consume(); <b class="conum">(2)</b>
+        CN.callSerially(()-&gt; { <b class="conum">(3)</b>
+            MessageEvent.PromptPromise res = evt.getPromptPromise(); <b class="conum">(4)</b>
+            if (Dialog.show("Audio Ready", "The audio is ready.", "Play", "Cancel")) {
+                res.complete(true); <b class="conum">(5)</b>
+            } else {
+                res.complete(false); <b class="conum">(6)</b>
+            }
+            return;
+        });
+        return;
+
+    }
+});</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p><code>isPromptForAudioPlayer()</code> tells us that this event is a prompt to play audio.</p>
+</li>
+<li>
+<p><strong>Important</strong> You must call <code>evt.consume()</code> to let Codename One that you are going to handle this prompt.  Otherwise, the default permission prompt will still be shown.</p>
+</li>
+<li>
+<p>Because we are using a modal dialog which will block the event dispatch, we wrap the dialog in <code>callSerially()</code> so this event dispatch won&#8217;t be blocked.  This is not absolutely necessary, but it will make it easier to follow the app&#8217;s logic, as these prompts are designed to by asynchronous.</p>
+</li>
+<li>
+<p>Obtain the <code>PromptPromise</code> from the event which we will use to convey the user&#8217;s response back to the app.  <strong>YOU MUST call the <code>complete()</code> on this promise no matter what, or the app will lock up.</strong></p>
+</li>
+<li>
+<p>If the user elected to "Play" the audio, then call <code>res.complete(true)</code> on the promise.</p>
+</li>
+<li>
+<p>If the user elected not to play the audio, then call <code>res.complete(false)</code> on the promise.</p>
+</li>
+</ol>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Tip</div>
+</td>
+<td class="content">
+You can also use the <code>isPromptForAudioRecorder()</code> method to detect a request for the audio recorder prompt.
+</td>
+</tr>
+</table>
+</div>
+<h3 id="_further_reading_3" class="discrete">Further Reading</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><a href="https://developers.google.com/web/updates/2017/09/autoplay-policy-changes">Chrome Autoplay Policy (2017-09)</a></p>
+</li>
+</ol>
 </div>
 </div>
 </div>

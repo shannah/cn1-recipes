@@ -9,4 +9,8 @@ include::javascript_receiving_messages_from_webpage.adoc[]
 
 include::javascript_lifecycle_events.adoc[]
 
+include::javascript_headless.adoc[]
+
 include::javascript_userpromptrequired.adoc[]
+
+include::javascript_custom_audio_dialog.adoc[]
