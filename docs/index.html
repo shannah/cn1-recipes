@@ -1025,7 +1025,7 @@ myIframe.contentWindow.addEventListener('cn1userpromptresponse', function(evt) {
 </div>
 <h3 id="_solution_9" class="discrete">Solution</h3>
 <div class="paragraph">
-<p>Register a message listener using <code>CN.addMessageListener()</code>, and call <code>isPromptForAudioPlayer()</code> on the received <code>MessageEvent</code> object to see if it is a prompt to play audio.</p>
+<p>Register a message listener using <code>CN.addMessageListener()</code>, and call <code>isPromptForAudioPlayer()</code> on the received <code>MessageEvent</code> object to see if it is a prompt to play audio.  If <code>isPromptForAudioPlayer()</code> returns <code>true</code>, then you can <code>consume()</code> the event to signal that you&#8217;ll be displaying a custom dialog, and then you can display your own dialog as shown in the example below.  When the user has accepted or rejected the permission prompt, you <strong>must</strong> call the <code>complete()</code> method on the promise that you obtain using the <code>getPromptPromise()</code> method.  <code>complete(true)</code> indicates that the user decided to play the audio.  <code>complete(false)</code> indicates that the user decided not to play the audio.</p>
 </div>
 <div class="paragraph">
 <p>E.g.</p>
@@ -1090,6 +1090,10 @@ You can also use the <code>isPromptForAudioRecorder()</code> method to detect a 
 </td>
 </tr>
 </table>
+</div>
+<h3 id="_discussion_8" class="discrete">Discussion</h3>
+<div class="paragraph">
+<p>In this example we used a modal dialog to prompt the user, but you can use any UI mechanism you like for prompting the user.  A <code>Sheet</code>, an interaction dialog, or a separate Form.  You just need to remember to call <code>complete()</code> on the promise after the user has made their choice.  If you forget to call <code>complete()</code> it could lock up the app.</p>
 </div>
 <h3 id="_further_reading_3" class="discrete">Further Reading</h3>
 <div class="olist arabic">
