@@ -937,7 +937,7 @@ Currently The <code>stop()</code> and <code>destroy()</code> lifecycle methods a
 </div>
 <h3 id="_solution_7" class="discrete">Solution</h3>
 <div class="paragraph">
-<p>Embed the app inside an iFrame, and position the iframe outside the viewport.  E.g.</p>
+<p>Embed the app inside a 1-pixel iframe.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -947,7 +947,7 @@ Currently The <code>stop()</code> and <code>destroy()</code> lifecycle methods a
   &lt;body&gt;
     &lt;iframe
       id='myapp'
-      style='position:fixed; top:-500px; left:0; width: 640px; height: 480px'
+      style='position:fixed; width: 1px; height:1px; border:none; bottom:0'
       src='https://example.com/MyApp/index.html'
     /&gt;
     .. Rest of webpage..
@@ -962,7 +962,7 @@ Currently The <code>stop()</code> and <code>destroy()</code> lifecycle methods a
 <div class="title">Note</div>
 </td>
 <td class="content">
-You can&#8217;t set <code>display:none</code> or set the width or height to 0 on the iframe.  Browsers will get smart and not load it fully then.  The iframe needs to have non-zero area, and be visible - but it can be rendered offscreen, which is what we do here.
+By trial and error, we have determined that displaying the iframe with 1px width and height is the best solution.  Using <code>display:none</code> causes the browser to not load the iframe at all.  Positioning the iframe outside the viewport, causes some APIs to be turned off (e.g. microphone).
 </td>
 </tr>
 </table>
@@ -970,6 +970,23 @@ You can&#8217;t set <code>display:none</code> or set the width or height to 0 on
 <h3 id="_discussion_7" class="discrete">Discussion</h3>
 <div class="paragraph">
 <p>If you are deploying your app as a headless app, then you are likely expecting to be able to communicate between the webpage and your app.  You will also need to be notified of lifecycle events in your app so you know when it has finished loading.  Be aware of CORS (cross-origin-resource-sharing) browser policies if the page containing the <code>&lt;iframe&gt;</code> is loaded from a different domain than your app.</p>
+</div>
+<h4 id="_cors_checklist" class="discrete">CORS Checklist</h4>
+<div class="paragraph">
+<p>If the app (inside the iframe) is hosted at a different domain than the parent page (the page with the &lt;iframe&gt; tag), then you need to jump through some hoops to get things working.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Make sure that you are not sending the <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options">X-Frame-Options</a> response header with your app.  This header prevents your page from being displayed inside an iframe.  Many web hosts add this header automatically.</p>
+</li>
+<li>
+<p>If you want to use features like "camera" and "microphone", you&#8217;ll need to add the "allow" attribute to your iframe tag.  E.g. <code>&lt;iframe allow="camera;microphone" &#8230;&#8203;/&gt;</code>.  For more information about this attribute, see <a href="https://sites.google.com/a/chromium.org/dev/Home/chromium-security/deprecating-permissions-in-cross-origin-iframes">This article</a>.</p>
+</li>
+<li>
+<p>If you need to communicate between the parent window and the iframe document (i.e. the window with your app, you&#8217;ll need to use <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage">Window.postMessage()</a>.  You can access the iframe&#8217;s "window" object using <code>myIframe.contentWindow</code>.</p>
+</li>
+</ol>
 </div>
 </div>
 </div>
