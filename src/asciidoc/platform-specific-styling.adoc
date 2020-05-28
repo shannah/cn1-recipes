@@ -1,0 +1,87 @@
+== Platform-Specific Styling
+
+[discrete]
+=== Problem
+
+You have used CSS to style your app, and it looks great on some devices but not on others.  You want to change the font size of some styles, but only on specific devices.
+
+[discrete]
+=== Solution
+
+Use CSS media queries to target styles at a specific device (e.g. desktop, tablet, or phone), platform (e.g. Android, iOS, Mac, Windows, etc...), or device densities (e.g. low, medium, high, very high, etc..).
+
+.Example: A media query to override Label color on iOS only
+[source,css]
+----
+@media platform-ios {
+    Label {
+        color: red;
+    }
+}
+----
+
+Media queries will allow you to target devices based on three axes: Platform, Device, and Density
+
+.Platform Queries
+[width="100%",options="header"]
+|====================
+| Value |  Description  
+| `platform-ios` |  Apply only on iOS
+| `platform-and` |  Apply only on Android
+| `platform-mac` |  Apply Only on Mac desktop.
+| `platform-win` | Apply Only on Windows desktop.
+|====================
+
+.Device Queries
+[width="100%",options="header"]
+|====================
+| Value |  Description  
+| `device-desktop` |  Apply only desktop
+| `device-tablet` |  Apply only on tablet
+| `device-phone` |  Apply only on phone
+|====================
+
+.Density Queries
+[width="100%",options="header"]
+|====================
+| Value |  Description  
+| `density-very-low` |  Very Low Density 176x220 And Smaller
+| `density-low` |  Low Density Up To 240x320
+| `density-medium` |  Medium Density Up To 360x480
+| `density-high` |  Hi Density Up To 480x854
+| `density-very-high` |  Very Hi Density Up To 1440x720
+| `density-hd` |  HD Up To 1920x1080
+| `density-560` |  Intermediate density for screens that sit somewhere between HD to 2HD
+| `density-2hd` | Double the HD level density
+| `density-4k` | 4K level density 
+|====================
+
+
+You can combine media queries to increase the specificity.
+
+.Example: Targeting only 4k Android tablets
+[source,css]
+----
+@media platform-and, device-tablet, density-4k {
+    Label {
+        font-size: 5mm;
+    }
+}
+----
+
+You can also combine more than one query of the same type to broaden the range of the query:
+.Example: Targeting only hd, 2hd, and 4k Android tablets
+[source,css]
+----
+@media platform-and, device-tablet, density-4k, density-2hd, density-hd {
+    Label {
+        font-size: 5mm;
+    }
+}
+----
+
+[discrete]
+=== Further Reading
+
+. https://github.com/codenameone/CodenameOne/wiki/css#media-queries[Media Queries Section of Codename One Wiki]
+

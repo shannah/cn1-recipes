@@ -1,0 +1,27 @@
+== Platform-Specific Font Scaling
+
+[discrete]
+=== Problem
+
+Your app looks great except that on desktop, the fonts are a little too small.  If you could only scale the fonts to be 25% larger on the desktop, your app would be perfect.
+
+[discrete]
+=== Solution
+
+You can use font-scaling constants to scale all of the fonts in your stylesheet by a constant factor.  You can use a "media-query-like" syntax to apply this scaling only on particular platforms, devices, or densities.
+
+.Example: Scaling Fonts to be 25% larger on desktop
+[source,css]
+----
+#Constants {
+    device-desktop-font-scale: "1.25";
+}
+----
+
+TIP: In most cases it is better to use standard media queries to apply styles which target specific platforms in a more fine-grained manner.  
+
+[discrete]
+=== Further Reading
+
+. https://github.com/codenameone/CodenameOne/wiki/css#font-scaling-constants[Font-Scaling constants section of the Codename One Wiki]
+

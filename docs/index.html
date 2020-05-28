@@ -446,18 +446,21 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
+<li><a href="#_themes">Themes</a></li>
+<li><a href="#_platform_specific_styling">1. Platform-Specific Styling</a></li>
+<li><a href="#_platform_specific_font_scaling">2. Platform-Specific Font Scaling</a></li>
 <li><a href="#_data_processing">Data Processing</a></li>
-<li><a href="#_parsing_html">1. Parsing HTML</a></li>
+<li><a href="#_parsing_html">3. Parsing HTML</a></li>
 <li><a href="#_security">Security</a></li>
-<li><a href="#_detecting_jailbroken_device">2. Detecting Jailbroken Device</a></li>
-<li><a href="#_hiding_sensitive_data_when_entering_background">3. Hiding Sensitive Data When Entering Background</a></li>
+<li><a href="#_detecting_jailbroken_device">4. Detecting Jailbroken Device</a></li>
+<li><a href="#_hiding_sensitive_data_when_entering_background">5. Hiding Sensitive Data When Entering Background</a></li>
 <li><a href="#_javascript">Javascript</a></li>
-<li><a href="#_sending_messages_to_outside_webpage">4. Sending Messages to Outside Webpage</a></li>
-<li><a href="#_receiving_messages_from_the_outside_webpage">5. Receiving Messages from the Outside Webpage</a></li>
-<li><a href="#_notify_webpage_when_app_is_started">6. Notify Webpage When App is Started</a></li>
-<li><a href="#_deploying_as_a_headless_javascript_app">7. Deploying as a "Headless" Javascript App</a></li>
-<li><a href="#_playing_audio_in_a_headless_app">8. Playing Audio in a Headless App</a></li>
-<li><a href="#_displaying_custom_prompt_to_play_audio">9. Displaying Custom Prompt to Play Audio</a></li>
+<li><a href="#_sending_messages_to_outside_webpage">6. Sending Messages to Outside Webpage</a></li>
+<li><a href="#_receiving_messages_from_the_outside_webpage">7. Receiving Messages from the Outside Webpage</a></li>
+<li><a href="#_notify_webpage_when_app_is_started">8. Notify Webpage When App is Started</a></li>
+<li><a href="#_deploying_as_a_headless_javascript_app">9. Deploying as a "Headless" Javascript App</a></li>
+<li><a href="#_playing_audio_in_a_headless_app">10. Playing Audio in a Headless App</a></li>
+<li><a href="#_displaying_custom_prompt_to_play_audio">11. Displaying Custom Prompt to Play Audio</a></li>
 </ul>
 </div>
 </div>
@@ -470,6 +473,224 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect1">
+<h2 id="_themes">Themes</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The following recipes include tips on customizing the look and feel of Codename one apps using themes, CSS, Styles, etc..</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_platform_specific_styling">1. Platform-Specific Styling</h2>
+<div class="sectionbody">
+<h3 id="_problem" class="discrete">Problem</h3>
+<div class="paragraph">
+<p>You have used CSS to style your app, and it looks great on some devices but not on others.  You want to change the font size of some styles, but only on specific devices.</p>
+</div>
+<h3 id="_solution" class="discrete">Solution</h3>
+<div class="paragraph">
+<p>Use CSS media queries to target styles at a specific device (e.g. desktop, tablet, or phone), platform (e.g. Android, iOS, Mac, Windows, etc&#8230;&#8203;), or device densities (e.g. low, medium, high, very high, etc..).</p>
+</div>
+<div class="listingblock">
+<div class="title">Example: A media query to override Label color on iOS only</div>
+<div class="content">
+<pre class="highlight"><code class="language-css" data-lang="css">@media platform-ios {
+    Label {
+        color: red;
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Media queries will allow you to target devices based on three axes: Platform, Device, and Density</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 1. Platform Queries</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Value</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>platform-ios</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Apply only on iOS</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>platform-and</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Apply only on Android</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>platform-mac</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Apply Only on Mac desktop.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>platform-win</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Apply Only on Windows desktop.</p></td>
+</tr>
+</tbody>
+</table>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 2. Device Queries</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Value</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>device-desktop</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Apply only desktop</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>device-tablet</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Apply only on tablet</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>device-phone</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Apply only on phone</p></td>
+</tr>
+</tbody>
+</table>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 3. Density Queries</caption>
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Value</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>density-very-low</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Very Low Density 176x220 And Smaller</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>density-low</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Low Density Up To 240x320</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>density-medium</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Medium Density Up To 360x480</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>density-high</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Hi Density Up To 480x854</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>density-very-high</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Very Hi Density Up To 1440x720</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>density-hd</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">HD Up To 1920x1080</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>density-560</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Intermediate density for screens that sit somewhere between HD to 2HD</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>density-2hd</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Double the HD level density</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>density-4k</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">4K level density</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>You can combine media queries to increase the specificity.</p>
+</div>
+<div class="listingblock">
+<div class="title">Example: Targeting only 4k Android tablets</div>
+<div class="content">
+<pre class="highlight"><code class="language-css" data-lang="css">@media platform-and, device-tablet, density-4k {
+    Label {
+        font-size: 5mm;
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can also combine more than one query of the same type to broaden the range of the query:
+.Example: Targeting only hd, 2hd, and 4k Android tablets</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code class="language-css" data-lang="css">@media platform-and, device-tablet, density-4k, density-2hd, density-hd {
+    Label {
+        font-size: 5mm;
+    }
+}</code></pre>
+</div>
+</div>
+<h3 id="_further_reading" class="discrete">Further Reading</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><a href="https://github.com/codenameone/CodenameOne/wiki/css#media-queries">Media Queries Section of Codename One Wiki</a></p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_platform_specific_font_scaling">2. Platform-Specific Font Scaling</h2>
+<div class="sectionbody">
+<h3 id="_problem_2" class="discrete">Problem</h3>
+<div class="paragraph">
+<p>Your app looks great except that on desktop, the fonts are a little too small.  If you could only scale the fonts to be 25% larger on the desktop, your app would be perfect.</p>
+</div>
+<h3 id="_solution_2" class="discrete">Solution</h3>
+<div class="paragraph">
+<p>You can use font-scaling constants to scale all of the fonts in your stylesheet by a constant factor.  You can use a "media-query-like" syntax to apply this scaling only on particular platforms, devices, or densities.</p>
+</div>
+<div class="listingblock">
+<div class="title">Example: Scaling Fonts to be 25% larger on desktop</div>
+<div class="content">
+<pre class="highlight"><code class="language-css" data-lang="css">#Constants {
+    device-desktop-font-scale: "1.25";
+}</code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Tip</div>
+</td>
+<td class="content">
+In most cases it is better to use standard media queries to apply styles which target specific platforms in a more fine-grained manner.
+</td>
+</tr>
+</table>
+</div>
+<h3 id="_further_reading_2" class="discrete">Further Reading</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><a href="https://github.com/codenameone/CodenameOne/wiki/css#font-scaling-constants">Font-Scaling constants section of the Codename One Wiki</a></p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="_data_processing">Data Processing</h2>
 <div class="sectionbody">
 <div class="paragraph">
@@ -478,13 +699,13 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect1">
-<h2 id="_parsing_html">1. Parsing HTML</h2>
+<h2 id="_parsing_html">3. Parsing HTML</h2>
 <div class="sectionbody">
-<h3 id="_problem" class="discrete">Problem</h3>
+<h3 id="_problem_3" class="discrete">Problem</h3>
 <div class="paragraph">
 <p>You want to parse some HTML content into a data structure.  You can&#8217;t simply use the <a href="https://www.codenameone.com/javadoc/com/codename1/xml/XMLParser.html">XMLParser</a> class because the content is not well-formed XML, but you would like to be able to work with the parsed document using the same tools (e.g. <a href="https://www.codenameone.com/javadoc/com/codename1/processing/Result.html">Result</a> and <a href="https://www.codenameone.com/javadoc/com/codename1/xml/Element.html">Element</a>.</p>
 </div>
-<h3 id="_solution" class="discrete">Solution</h3>
+<h3 id="_solution_3" class="discrete">Solution</h3>
 <div class="paragraph">
 <p>Use the HTMLParser class from the <a href="https://github.com/shannah/CN1HTMLParser">CN1HTMLParser cn1lib</a>.  It contains a simple API for parsing an HTML string into an <a href="https://www.codenameone.com/javadoc/com/codename1/xml/Element.html">Element</a>, the same type of element that <a href="https://www.codenameone.com/javadoc/com/codename1/xml/XMLParser.html">XMLParser</a> returns.</p>
 </div>
@@ -557,7 +778,7 @@ The Codename One core library also includes an HTMLParser class at <code>com.cod
 </tr>
 </table>
 </div>
-<h3 id="_further_reading" class="discrete">Further Reading</h3>
+<h3 id="_further_reading_3" class="discrete">Further Reading</h3>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
@@ -579,13 +800,13 @@ The Codename One core library also includes an HTMLParser class at <code>com.cod
 </div>
 </div>
 <div class="sect1">
-<h2 id="_detecting_jailbroken_device">2. Detecting Jailbroken Device</h2>
+<h2 id="_detecting_jailbroken_device">4. Detecting Jailbroken Device</h2>
 <div class="sectionbody">
-<h3 id="_problem_2" class="discrete">Problem</h3>
+<h3 id="_problem_4" class="discrete">Problem</h3>
 <div class="paragraph">
 <p>You want to detect whether the device your app is running on is Jailbroken or rooted.</p>
 </div>
-<h3 id="_solution_2" class="discrete">Solution</h3>
+<h3 id="_solution_4" class="discrete">Solution</h3>
 <div class="paragraph">
 <p>While there is no way to know whether the device is rooted with 100% certainty, you can use the <a href="https://github.com/shannah/CN1JailbreakDetect">CN1JailbreakDetect</a> cn1lib to to make a good guess.  This cn1lib acts as a thin wrapper around the <a href="https://github.com/scottyab/rootbeer">RootBeer</a> Android library, and <a href="https://github.com/thii/DTTJailbreakDetection">DTTJailbreakDetection</a> iOS library, which employ heuristics to determine whether the device has likely been jailbroken.</p>
 </div>
@@ -719,7 +940,7 @@ There is NO way to know with 100% certainty whether or not a device has been jai
 </tr>
 </table>
 </div>
-<h3 id="_further_reading_2" class="discrete">Further Reading</h3>
+<h3 id="_further_reading_4" class="discrete">Further Reading</h3>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
@@ -736,13 +957,13 @@ There is NO way to know with 100% certainty whether or not a device has been jai
 </div>
 </div>
 <div class="sect1">
-<h2 id="_hiding_sensitive_data_when_entering_background">3. Hiding Sensitive Data When Entering Background</h2>
+<h2 id="_hiding_sensitive_data_when_entering_background">5. Hiding Sensitive Data When Entering Background</h2>
 <div class="sectionbody">
-<h3 id="_problem_3" class="discrete">Problem</h3>
+<h3 id="_problem_5" class="discrete">Problem</h3>
 <div class="paragraph">
 <p>iOS will take a screenshot of your app when it enters the background that it uses for various previews of the app state.  You want to hide sensitive data in your app&#8217;s UI to prevent this information from leaking out via these screenshots.</p>
 </div>
-<h3 id="_solution_3" class="discrete">Solution</h3>
+<h3 id="_solution_5" class="discrete">Solution</h3>
 <div class="paragraph">
 <p>You can use the <code>ios.blockScreenshotsOnEnterBackground=true</code> build hint to prevent iOS from taking screenshots app goes into the background.  This will cause the canvas on which the Codename One UI is drawn to be hidden in the <code>didEnterBackground</code> hook and unhidden in the <code>willEnterForeground</code> hook.</p>
 </div>
@@ -781,13 +1002,13 @@ There is NO way to know with 100% certainty whether or not a device has been jai
 </div>
 </div>
 <div class="sect1">
-<h2 id="_sending_messages_to_outside_webpage">4. Sending Messages to Outside Webpage</h2>
+<h2 id="_sending_messages_to_outside_webpage">6. Sending Messages to Outside Webpage</h2>
 <div class="sectionbody">
-<h3 id="_problem_4" class="discrete">Problem</h3>
+<h3 id="_problem_6" class="discrete">Problem</h3>
 <div class="paragraph">
 <p>You want to send a message from your Codename One app to the webpage that contains it.</p>
 </div>
-<h3 id="_solution_4" class="discrete">Solution</h3>
+<h3 id="_solution_6" class="discrete">Solution</h3>
 <div class="paragraph">
 <p>You can use <code>CN.postMessage()</code>, in Codename One to send the message.  The message will be dispatched to Javascript event listeners in the outside webpage that register to receive <code>cn1outbox</code> events.</p>
 </div>
@@ -822,13 +1043,13 @@ window.addEventListener('cn1outbox', function(evt) {
 </div>
 </div>
 <div class="sect1">
-<h2 id="_receiving_messages_from_the_outside_webpage">5. Receiving Messages from the Outside Webpage</h2>
+<h2 id="_receiving_messages_from_the_outside_webpage">7. Receiving Messages from the Outside Webpage</h2>
 <div class="sectionbody">
-<h3 id="_problem_5" class="discrete">Problem</h3>
+<h3 id="_problem_7" class="discrete">Problem</h3>
 <div class="paragraph">
 <p>You want to send messages from Javascript (i.e. the page containing the app) to the Codename One app.</p>
 </div>
-<h3 id="_solution_5" class="discrete">Solution</h3>
+<h3 id="_solution_7" class="discrete">Solution</h3>
 <div class="paragraph">
 <p>From Javascript, you can dispatch a custom event named 'cn1inbox' on the <code>window</code> object.  You can receive these events in Codename One using the <code>CN.addMessageListener()</code> method.</p>
 </div>
@@ -858,13 +1079,13 @@ CN.addMessageListener(evt-&gt;{
 </div>
 </div>
 <div class="sect1">
-<h2 id="_notify_webpage_when_app_is_started">6. Notify Webpage When App is Started</h2>
+<h2 id="_notify_webpage_when_app_is_started">8. Notify Webpage When App is Started</h2>
 <div class="sectionbody">
-<h3 id="_problem_6" class="discrete">Problem</h3>
+<h3 id="_problem_8" class="discrete">Problem</h3>
 <div class="paragraph">
 <p>You want to notify the outside page when the app is finished loading.  If the webpage needs to communicate with the app, it is very helpful to know when the app is ready.</p>
 </div>
-<h3 id="_solution_6" class="discrete">Solution</h3>
+<h3 id="_solution_8" class="discrete">Solution</h3>
 <div class="paragraph">
 <p>Register a DOM event listener on the <code>window</code> object for the <code>aftercn1start</code> event.</p>
 </div>
@@ -881,7 +1102,7 @@ CN.addMessageListener(evt-&gt;{
 <p>Codename One broadcasts its lifecycle events as DOM events so that the webpage can stay synchronized with its status.  The following events are currently supported:</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 1. Supported DOM events</caption>
+<caption class="title">Table 4. Supported DOM events</caption>
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
@@ -929,13 +1150,13 @@ Currently The <code>stop()</code> and <code>destroy()</code> lifecycle methods a
 </div>
 </div>
 <div class="sect1">
-<h2 id="_deploying_as_a_headless_javascript_app">7. Deploying as a "Headless" Javascript App</h2>
+<h2 id="_deploying_as_a_headless_javascript_app">9. Deploying as a "Headless" Javascript App</h2>
 <div class="sectionbody">
-<h3 id="_problem_7" class="discrete">Problem</h3>
+<h3 id="_problem_9" class="discrete">Problem</h3>
 <div class="paragraph">
 <p>You want to deploy your app inside a webpage "headlessly".  I.e. You don&#8217;t want the user to see the app.  This might be useful if you just want to use your app as a javascript library.</p>
 </div>
-<h3 id="_solution_7" class="discrete">Solution</h3>
+<h3 id="_solution_9" class="discrete">Solution</h3>
 <div class="paragraph">
 <p>Embed the app inside a 1-pixel iframe.</p>
 </div>
@@ -991,9 +1212,9 @@ By trial and error, we have determined that displaying the iframe with 1px width
 </div>
 </div>
 <div class="sect1">
-<h2 id="_playing_audio_in_a_headless_app">8. Playing Audio in a Headless App</h2>
+<h2 id="_playing_audio_in_a_headless_app">10. Playing Audio in a Headless App</h2>
 <div class="sectionbody">
-<h3 id="_problem_8" class="discrete">Problem</h3>
+<h3 id="_problem_10" class="discrete">Problem</h3>
 <div class="paragraph">
 <p>In some cases Codename One apps may be deployed as "headless" apps.  This can be achieved by simply embedding the app inside an iframe and positioning the iframe outside the main view port (e.g. x=-1000, y=-1000).  If you are deploying the app this way, you may run into cases where the app requires user interaction.  For example, if you try to play audio in the app, and you are running on iOS, then the app may require some user interaction in order for Safari to allow the audio.  Codename One apps deal with this situation by prompting the user to play the audio.  However, if the app is off screen, the user won&#8217;t see this prompt, so the audio will <strong>just not play</strong>.</p>
 </div>
@@ -1009,7 +1230,7 @@ The user will only be prompted for the <strong>first</strong> audio clip that th
 </tr>
 </table>
 </div>
-<h3 id="_solution_8" class="discrete">Solution</h3>
+<h3 id="_solution_10" class="discrete">Solution</h3>
 <div class="paragraph">
 <p>Codename One broadcasts a custom DOM event named "cn1userprompt" when a prompt is displayed that the user needs to interact with.  You can register an event listener in the outside webpage to listen for this event, and display the iframe in such cases.</p>
 </div>
@@ -1030,17 +1251,17 @@ myIframe.contentWindow.addEventListener('cn1userpromptresponse', function(evt) {
 </div>
 </div>
 <div class="sect1">
-<h2 id="_displaying_custom_prompt_to_play_audio">9. Displaying Custom Prompt to Play Audio</h2>
+<h2 id="_displaying_custom_prompt_to_play_audio">11. Displaying Custom Prompt to Play Audio</h2>
 <div class="sectionbody">
 <h3 id="_background" class="discrete">Background</h3>
 <div class="paragraph">
 <p>On some browsers (e.g. Safari), your app can only play audio as a direct response to user interaction.  E.g. The user needs to actually click on the screen to initiate audio play.  This is only required for the first audio clip that your app plays. If the app is ever denied permission to play an audio clip by the browser, it will display a prompt to the user saying "Audio Ready", with a "Play Now" button.  When the user presses that button, the audio will begin to play.</p>
 </div>
-<h3 id="_problem_9" class="discrete">Problem</h3>
+<h3 id="_problem_11" class="discrete">Problem</h3>
 <div class="paragraph">
 <p>You want to customize the dialog prompt that is displayed to ask the user for permission to play audio.</p>
 </div>
-<h3 id="_solution_9" class="discrete">Solution</h3>
+<h3 id="_solution_11" class="discrete">Solution</h3>
 <div class="paragraph">
 <p>Register a message listener using <code>CN.addMessageListener()</code>, and call <code>isPromptForAudioPlayer()</code> on the received <code>MessageEvent</code> object to see if it is a prompt to play audio.  If <code>isPromptForAudioPlayer()</code> returns <code>true</code>, then you can <code>consume()</code> the event to signal that you&#8217;ll be displaying a custom dialog, and then you can display your own dialog as shown in the example below.  When the user has accepted or rejected the permission prompt, you <strong>must</strong> call the <code>complete()</code> method on the promise that you obtain using the <code>getPromptPromise()</code> method.  <code>complete(true)</code> indicates that the user decided to play the audio.  <code>complete(false)</code> indicates that the user decided not to play the audio.</p>
 </div>
@@ -1124,7 +1345,7 @@ Calling <code>complete(true)</code> directly without actually displaying a dialo
 </tr>
 </table>
 </div>
-<h3 id="_further_reading_3" class="discrete">Further Reading</h3>
+<h3 id="_further_reading_5" class="discrete">Further Reading</h3>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
@@ -1137,7 +1358,7 @@ Calling <code>complete(true)</code> directly without actually displaying a dialo
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2020-05-20 14:25:15 -0700
+Last updated 2020-05-28 11:50:05 -0700
 </div>
 </div>
 </body>

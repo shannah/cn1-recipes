@@ -1,0 +1,8 @@
+[themes]
+= Themes
+
+The following recipes include tips on customizing the look and feel of Codename one apps using themes, CSS, Styles, etc..
+
+include::platform-specific-styling.adoc[]
+
+include::font-scaling.adoc[]
