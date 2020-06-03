@@ -11,7 +11,7 @@ You need to communicate back and forth between the Codename One app and the webp
 There are two sides to this problem:
 
 . Sending messages from Codename One to the outside webpage.
-. Sending messages form the Outside webpage to Codename One.
+. Sending messages from the Outside webpage to Codename One.
 
 For the first case (sending messages to the outside webpage), you can use `CN.postMessage()`, in Codename One to send the message.  The message will be dispatched to Javascript event listeners in the outside webpage that register to receive 'cn1outbox' events.
 
@@ -26,6 +26,34 @@ MessageEvent message = new MessageEvent(
 //Dispatch the message
 CN.postMessage(message);
 ----
+
+Alternatively, you can use `Display.getSharedJavascriptContext()` to obtain a https://www.codenameone.com/javadoc/com/codename1/ui/BrowserComponent.html[BrowserComponent] that encapsulates the Browser environment that the app is running in.  This offers a little bit more flexibilty than `postMessage()` as you can run arbitrary Javascript comments
+
+.Example using `getSharedJavascriptContext()` to interact with the browser environment
+[source,java]
+----
+Form hi = new Form("Hi World", new BorderLayout());
+TextArea input = new TextArea();
+TextArea output = new TextArea();
+output.setEditable(false);
+
+Button execute = new Button("Run");
+execute.addActionListener(evt->{
+    BrowserComponent bc = CN.getSharedJavascriptContext().ready().get();
+    bc.execute("callback.onSuccess(window.eval(${0}))", new Object[]{input.getText()}, res->{
+        output.setText(res.toString());
+    });
+});
+SplitPane split = new SplitPane(SplitPane.VERTICAL_SPLIT, input, output, "0", "50%", "99%");
+hi.add(CENTER, split);
+hi.add(NORTH, execute);
+
+hi.show();
+----
+
+image::images/Image-030620-115607.100.png[]
+
+
 
 .Receiving messages from Codename One in outside webpage.
 [source,javascript]
