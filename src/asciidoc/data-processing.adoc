@@ -4,3 +4,5 @@
 The following recipes relate to data processing and conversion.  This includes parsing data like JSON, HTML, and XML.
 
 include::parsing-html.adoc[]
+
+include::using_clipboard.adoc[]

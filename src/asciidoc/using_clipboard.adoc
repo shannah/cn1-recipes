@@ -1,0 +1,154 @@
+== Using the Clipboard
+
+[discrete]
+=== Problem
+
+You want to copy and paste to and from the system clipboard.
+
+[discrete]
+=== Solution
+
+Use the `Display.copyToClipboard()` and `Display.getPasteDataFromClipboard()` to copy andn paste to/from the system clipboard respectively.
+
+.Example: Copying to the Clipboard
+[source,java]
+----
+Display.getInstance().copyToClipboard("Some text to copy");
+----
+
+.Example: Copying text from clipboard into Label
+[source,java]
+----
+Object pasteData = Display.getInstance().getPasteDataFromClipboard();
+Label text = new Label();
+if (pasteData instanceof String) {
+    text.setText((String)pasteData);
+} else {
+    ToastBar.showInfoMessage("Paste data is not text");
+}
+----
+
+[IMPORTANT]
+====
+In the Javascript port we are restricted by the browser's sandbox.  We can't *just* access the system clipboard data for security reasons.  However, if the user initiates a paste via `Ctrl-V`, `Command-V`, `Edit` -> `Paste`, etc.., the system clipboard contents will be loaded into the Codename One clipboard, so that the next time you call `getPasteDataFromClipboard()`, it will include those contents.
+
+You can use `Form.addPasteListener(ActionListener)` to be notified when the clipboard contents are updated via this method so that you can respond appropriately - usually by calling `getPasteDataFromClipboard()` and doing something with the data.
+====
+
+.Full Example allowing copy and paste using the Clipboard API
+[source,java]
+----
+package com.codename1.samples;
+
+
+import com.codename1.components.ToastBar;
+import static com.codename1.ui.CN.*;
+import com.codename1.ui.Display;
+import com.codename1.ui.Form;
+import com.codename1.ui.Dialog;
+import com.codename1.ui.Label;
+import com.codename1.ui.plaf.UIManager;
+import com.codename1.ui.util.Resources;
+import com.codename1.io.Log;
+import com.codename1.ui.Toolbar;
+import java.io.IOException;
+import com.codename1.ui.layouts.BoxLayout;
+import com.codename1.io.NetworkEvent;
+import com.codename1.ui.Button;
+import com.codename1.ui.CN;
+import com.codename1.ui.TextArea;
+import com.codename1.ui.TextField;
+import com.codename1.ui.layouts.GridLayout;
+
+
+public class ClipboardSample {
+
+    private Form current;
+    private Resources theme;
+
+    public void init(Object context) {
+        // use two network threads instead of one
+        updateNetworkThreadCount(2);
+
+        theme = UIManager.initFirstTheme("/theme");
+
+        // Enable Toolbar on all Forms by default
+        Toolbar.setGlobalToolbar(true);
+
+        // Pro only feature
+        Log.bindCrashProtection(true);
+
+        addNetworkErrorListener(err -> {
+            // prevent the event from propagating
+            err.consume();
+            if(err.getError() != null) {
+                Log.e(err.getError());
+            }
+            Log.sendLogAsync();
+            Dialog.show("Connection Error", "There was a networking error in the connection to " + err.getConnectionRequest().getUrl(), "OK", null);
+        });        
+    }
+    
+    public void start() {
+        if(current != null){
+            current.show();
+            return;
+        }
+        Form hi = new Form("Hi World", BoxLayout.y());
+        TextField text = new TextField();
+        Button copyBtn = new Button("Copy");
+        copyBtn.addActionListener(evt->{
+            Display.getInstance().copyToClipboard(text.getText());
+        });
+        Button pasteBtn = new Button("Paste");
+        pasteBtn.addActionListener(evt->{
+            if ("html5".equalsIgnoreCase(CN.getPlatformName())) {
+                // In the browser, we don't have permission, in general, to read from the clipboard
+                // but the user can initiate a paste using Ctrl-V or Cmd-V, or Edit > Paste, 
+                // and the data will be received in the paste listener.
+                Dialog.show("Help", "Please key-codes or Edit > Paste to paste content.", "OK", null);
+                return;
+            }
+            handlePaste(text);
+        });
+        
+        // The paste listener is informed when the user initiates a paste using 
+        // key-codes or browser menu items (Edit > Paste).  This is currently only
+        // used by the Javascript port.
+        hi.addPasteListener(evt->{
+            handlePaste(text);
+        });
+        
+        hi.add(text)
+                .add(GridLayout.encloseIn(2, copyBtn, pasteBtn));
+       
+        hi.show();
+    }
+    
+    /**
+     * Pastes the current clipboard data as text into the given TextArea.
+     * @param text The textarea to paste into
+     */
+    private void handlePaste(TextArea text) {
+        Object pasteData = Display.getInstance().getPasteDataFromClipboard();
+        if (pasteData instanceof String) {
+            text.setText((String)pasteData);
+        } else {
+            ToastBar.showInfoMessage("Paste data is not text");
+        }
+    }
+
+    public void stop() {
+        current = getCurrentForm();
+        if(current instanceof Dialog) {
+            ((Dialog)current).dispose();
+            current = getCurrentForm();
+        }
+    }
+    
+    public void destroy() {
+    }
+
+}
+
+----
